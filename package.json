@@ -1,0 +1,64 @@
+{
+  "name": "@radiowave/audino",
+  "version": "0.0.6",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/radiowave/AudinoJS"
+  },
+  "description": "The Web Audio player for radiowave.io",
+  "main": "dist/audino.umd.js",
+  "module": "dist/audino.esm.js",
+  "unpkg": "dist/audino.min.js",
+  "scripts": {
+    "test": "jest --verbose --coverage",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "prepublishOnly": "./publish.sh",
+    "build": "npm run build:umd && npm run build:es && npm run build:unpkg",
+    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/audino.umd.js",
+    "build:es": "rollup --config build/rollup.config.js --format es --file dist/audino.esm.js",
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/audino.min.js"
+  },
+  "devDependencies": {
+    "@types/faker": "^4.1.4",
+    "@types/jest": "^23.3.2",
+    "@types/sinon": "^5.0.2",
+    "coveralls": "^3.0.2",
+    "faker": "^4.1.0",
+    "jest": "^23.4.2",
+    "rollup": "^0.57.1",
+    "rollup-plugin-typescript2": "^0.8.1",
+    "sinon": "^6.3.3",
+    "ts-jest": "^23.1.4",
+    "typescript": "^3.0.3"
+  },
+  "jest": {
+    "testURL": "http://local.radiowave.io",
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "transform": {
+      "^.+\\.*(t|j)sx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "verbose": true,
+    "testRegex": "/test/.*\\.(spec).(ts|js)$",
+    "collectCoverageFrom": [
+      "src/**/*.{js,ts}",
+      "!**/node_modules/**",
+      "!**/lib/**",
+      "!**/*.d.{ts}"
+    ],
+    "coverageReporters": [
+      "text",
+      "json",
+      "lcov",
+      "html"
+    ]
+  },
+  "author": "sawyer@sawyerhopkins.com",
+  "license": "MIT"
+}

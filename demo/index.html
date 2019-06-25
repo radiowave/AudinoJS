@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>Radiowave Player Demo</title>
+  </head>
+  <body>
+    <button id="btn-play">play</button>
+    <button id="btn-play-2">play other stream</button>
+    <button id="btn-pause">pause</button>
+    <script src="../dist/audino.umd.js"></script>
+    <script>
+      const player = new AudinoJS.Audino()
+      player.emitter.$on('*', (...args) => {
+          console.log(args)
+        })
+
+      document.getElementById('btn-play').onclick = () => {
+        player.loadStream([{
+          url: 'https://s.radiowave.io/kswzlp.opus',
+          type: 'opus'
+        }])
+      }
+
+      document.getElementById('btn-play-2').onclick = () => {
+        player.loadStream([{
+          url: 'https://streaming.kansaspublicradio.org:8001/kpr1',
+          type: 'opus'
+        }])
+      }
+
+      document.getElementById('btn-pause').onclick = () => {
+        player.pause()
+      }
+    </script>
+  </body>
+</html>
