@@ -17,7 +17,8 @@
     "build": "npm run build:umd && npm run build:es && npm run build:unpkg",
     "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/audino.umd.js",
     "build:es": "rollup --config build/rollup.config.js --format es --file dist/audino.esm.js",
-    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/audino.min.js"
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/audino.min.js",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "@types/faker": "^4.1.4",
