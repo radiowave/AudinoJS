@@ -64,8 +64,7 @@ export enum MediaSourceHookEnum {
   BEFORE_PLAY = 'beforePlay',
   BEFORE_PAUSE = 'beforePause',
   AFTER_PLAY = 'afterPlay',
-  AFTER_PAUSE = 'afterPause',
-  LOAD_ERROR = 'loadError'
+  AFTER_PAUSE = 'afterPause'
 }
 
 export enum MediaEvents {

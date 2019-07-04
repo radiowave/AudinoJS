@@ -70,32 +70,9 @@ export class Audino implements IAudino {
     }
   }
 
-  private resumeContext = async () => {
-    try {
-      await this.source.context.resume()
-    } catch (ex) {
-      throw new ContextResumeError()
-    }
-  }
-
-  private beforePlay = async () => {
-    const emitter = this.options.services.Emitter
-
-    // If the context was create onload before user interaction
-    // the context will be in a suspended state
-    if (this.source && this.source.context.state === 'suspended') {
-      await this.resumeContext()
-      // Unable to resume context
-      if (this.source.context.state === 'suspended') {
-        emitter.$emit(MediaSourceHookEnum.LOAD_ERROR)
-      }
-    }
-  }
-
   public play = async () => {
     const emitter = this.options.services.Emitter
   
-    await this.beforePlay()
     await emitter.$emit(MediaSourceHookEnum.BEFORE_PLAY)
     await this.audio.play()
     await emitter.$emit(MediaSourceHookEnum.AFTER_PLAY)
