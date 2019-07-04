@@ -79,10 +79,16 @@ export class Audino implements IAudino {
   }
 
   private beforePlay = async () => {
+    const emitter = this.options.services.Emitter
+
     // If the context was create onload before user interaction
     // the context will be in a suspended state
     if (this.source && this.source.context.state === 'suspended') {
       await this.resumeContext()
+      // Unable to resume context
+      if (this.source.context.state === 'suspended') {
+        emitter.$emit(MediaSourceHookEnum.LOAD_ERROR)
+      }
     }
   }
 
