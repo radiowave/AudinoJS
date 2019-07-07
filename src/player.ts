@@ -78,7 +78,7 @@ export class Audino implements IAudino {
       // are the current source.
       const stagedSource = this.audioElement.src
       this.audioElement.src = ''
-      await this.audioContext.resume()
+      await (this.audioNode.context as AudioContext).resume()
       this.audioElement.src = stagedSource
     } catch (ex) {
       throw new ContextResumeError()
@@ -88,7 +88,7 @@ export class Audino implements IAudino {
   private beforePlay = async () => {
     // If the context was create onload before user interaction
     // the context will be in a suspended state
-    if (this.audioContext && this.audioContext.state === 'suspended') {
+    if (this.audioNode && this.audioNode.context && this.audioNode.context.state === 'suspended') {
       await this.resumeContext()
     }
   }

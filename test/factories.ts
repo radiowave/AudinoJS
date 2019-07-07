@@ -30,7 +30,7 @@ export const makeAudioWrapper = (
     play: playSpy,
     pause: pauseSpy,
     canPlayType: (str) => str ? 'probably' : '',
-    getContextSource: () => {
+    getAudioNode: () => {
       if (failCreateSource) {
         throw new Error()
       }

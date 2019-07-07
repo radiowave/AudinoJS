@@ -5,8 +5,7 @@ import { IAudinoOptions, AudinoOptions, MediaSourceHookEnum } from '../src'
 import { 
   ContextResumeError,
   NoPlayableSourceError,
-  NoStreamsProvidedError,
-  UnsupportedDeviceError,
+  NoStreamsProvidedError
 } from '../src/errors'
 
 interface ITestOptions {
@@ -218,7 +217,7 @@ describe('Player', () => {
     })
 
     it('should resume context if needed', async () => {
-      const { audino, playSpy, resumeSpy, connectSpy } = createTestEntities({
+      const { audino, playSpy, resumeSpy } = createTestEntities({
         contextState: 'suspended'
       })
       await audino.loadStream([{
