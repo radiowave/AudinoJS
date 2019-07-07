@@ -59,7 +59,7 @@ export class AudioWrapper implements IAudioWrapper {
     this.audio.volume = normalizedVolume
   }
 
-  public getContextSource = (ctx: AudioContext): AudioNode => {
+  public getAudioNode = (ctx: AudioContext): AudioNode => {
     return ctx.createMediaElementSource(this.audio)
   }
 

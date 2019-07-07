@@ -53,7 +53,7 @@ export interface IAudioWrapper {
   play: () => Promise<void>
   pause: () => Promise<void>
   canPlayType: (type: string) => CanPlayTypeResult
-  getContextSource: (ctx: AudioContext) => AudioNode
+  getAudioNode: (ctx: AudioContext) => AudioNode
 }
 
 /**

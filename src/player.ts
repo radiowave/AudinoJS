@@ -20,9 +20,9 @@ export class Audino implements IAudino {
   private _volume: number
   private options: IAudinoOptions
   
-  private ctx: AudioContext
-  private source: AudioNode // @TODO make a module?
-  private audio: IAudioWrapper
+  private audioNode: AudioNode // @TODO make a module?
+  private audioContext: AudioContext
+  private audioElement: IAudioWrapper
 
   constructor (
     options: IAudinoOptions = new AudinoOptions(),
@@ -31,8 +31,8 @@ export class Audino implements IAudino {
     this.options = options
     
     // Load modules
-    this.ctx = options.modules.createAudioContext()
-    this.audio = options.modules.createAudioWrapper()
+    this.audioContext = options.modules.createAudioContext()
+    this.audioElement = options.modules.createAudioWrapper()
   }
 
   public static makePlayerOptions = () => {
@@ -46,7 +46,7 @@ export class Audino implements IAudino {
   }
 
   public get src () {
-    return this.audio.src
+    return this.audioElement.src
   }
 
   public get volume (): number {
@@ -54,27 +54,51 @@ export class Audino implements IAudino {
   }
 
   public set volume (volume: number) {
-    this.audio.volume = volume
+    this.audioElement.volume = volume
     this._volume = volume
   }
 
-  private tryCreateSource = () => {
+  private tryCreateAudioNode = () => {
     try {
-      if (!this.source) {
-        this.source = this.audio.getContextSource(this.ctx)
-        this.source.connect(this.ctx.destination)
+      if (!this.audioNode) {
+        this.audioNode = this.audioElement.getAudioNode(this.audioContext)
+        this.audioNode.connect(this.audioContext.destination)
       }
+
     } catch (ex) {
       console.error(ex)
-      this.source = null
+      this.audioNode = null
+    }
+  }
+
+  private resumeContext = async () => {
+    try {
+      // We want to remove the source when we resume,
+      // as offline stations will hang the resume if they
+      // are the current source.
+      const stagedSource = this.audioElement.src
+      this.audioElement.src = ''
+      await this.audioContext.resume()
+      this.audioElement.src = stagedSource
+    } catch (ex) {
+      throw new ContextResumeError()
+    }
+  }
+
+  private beforePlay = async () => {
+    // If the context was create onload before user interaction
+    // the context will be in a suspended state
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      await this.resumeContext()
     }
   }
 
   public play = async () => {
     const emitter = this.options.services.Emitter
   
+    await this.beforePlay()
     await emitter.$emit(MediaSourceHookEnum.BEFORE_PLAY)
-    await this.audio.play()
+    await this.audioElement.play()
     await emitter.$emit(MediaSourceHookEnum.AFTER_PLAY)
   }
 
@@ -82,7 +106,7 @@ export class Audino implements IAudino {
     const emitter = this.options.services.Emitter
   
     await emitter.$emit(MediaSourceHookEnum.BEFORE_PAUSE)
-    await this.audio.pause()
+    await this.audioElement.pause()
     await emitter.$emit(MediaSourceHookEnum.AFTER_PAUSE)
   }
 
@@ -104,7 +128,7 @@ export class Audino implements IAudino {
 
     // Find the first playable source
     const stream = streams.find((s) => {
-      return this.audio.canPlayType(s.mediaType || '') !== ''
+      return this.audioElement.canPlayType(s.mediaType || '') !== ''
     })
 
     // Check that there is a playable streams
@@ -113,12 +137,12 @@ export class Audino implements IAudino {
     }
 
     // Do not change audio stream if url has not changed
-    if (this.audio.src !== stream.url) {
+    if (this.audioElement.src !== stream.url) {
       // Set stream
-      this.audio.src = stream.url
+      this.audioElement.src = stream.url
 
       // Attempt to create source
-      this.tryCreateSource()
+      this.tryCreateAudioNode()
     }
 
     // Autoplay
